@@ -1,0 +1,8 @@
+architect:
+  - meetmangukiya
+
+merge:
+  fast-forward: only
+
+docker:
+  image: "coala/rultor-python"
