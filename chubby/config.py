@@ -7,7 +7,7 @@ def create_if_not_exists():
     """
 
     # check if it exists
-    if not os.path.exists(os.path.join(os.path.expanduser("~"), '.chubby')):
+    if not os.path.exists(get_config_path()):
         os.chdir(os.path.expanduser("~"))
         # create file
         with open(".chubby", 'a'):
