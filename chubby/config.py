@@ -1,4 +1,7 @@
+import configparser
 import os
+
+config = configparser.ConfigParser()
 
 def create_if_not_exists():
     """
@@ -11,3 +14,14 @@ def create_if_not_exists():
         # create file
         with open(".chubby", 'a'):
             pass
+
+def read_config(config=config):
+    """
+    :returns:
+        returns the config object.
+    """
+    create_if_not_exists()
+
+    with open(os.path.join(os.path.expand("~"), ".chubby")) as f:
+        config.read(f)
+    return config
