@@ -1,8 +1,6 @@
 import configparser
 import os
 
-config = configparser.ConfigParser()
-
 def create_if_not_exists():
     """
     Create the config file if doesn't exist already.
@@ -18,15 +16,21 @@ def create_if_not_exists():
 def get_config_path():
     return os.path.join(os.path.expanduser("~"), ".chubby")
 
-def read_config(config=config):
+def read_config(config=configparser.ConfigParser(), path=None):
     """
+    :param path:
+        Absolute path of the config file to be read.
     :returns:
         returns the config object.
     """
     create_if_not_exists()
 
-    with open(os.path.join(os.path.expanduser("~"), ".chubby")) as f:
-        config.read(f)
+    if path:
+        with open(path) as f:
+            config.read(f)
+    else:
+        with open(os.path.join(os.path.expanduser("~"), ".chubby")) as f:
+            config.read(f)
     return config
 
 def write_config(section_name: str,
