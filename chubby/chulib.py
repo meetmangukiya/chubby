@@ -28,12 +28,16 @@
 import github3
 import getpass
 
-def create_token(username):
+import .config
+
+def create_token(username: str):
     """
-    :param user:
-        github3 login object
+    Create token for a given username.
+
+    :param username:
+        Username of the account whose token has to be created.
     :returns:
-        created token.
+        github3 Authorization object.
     """
 
     password = getpass.getpass()
@@ -50,3 +54,21 @@ def create_token(username):
                              note="chubby",
                              note_url="https://github.com/meetmangukiya/chubby"
                              two_factor_callback=two_factor_auth)
+
+def save_to_config(username: str):
+    """
+    Create token for a given user and save it to the config file.
+    :param username:
+        Username for which token has to be created and saved to config.
+    :returns:
+        github3 login object.
+    """
+    auth = create_token(username)
+    contents = {
+        "token": auth.token,
+        "id": auth.id,
+        "username": username
+    }
+    config.write_config(username, contents)
+    gh = github3.login(token=auth.token)
+    return gh
