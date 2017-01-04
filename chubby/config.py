@@ -41,9 +41,8 @@ def write_config(section_name: str,
     # if present, modify
     if section_name in config:
         for keys in section_content:
-            # if already present, overwrite
-            if keys in config[section_name]:
-                config[section_name][keys] = section_content[keys]
+            # if already present, overwrite. If not create
+            config[section_name][keys] = section_content[keys]
     # else create a new section
     else:
         config[section_name] = section_content
