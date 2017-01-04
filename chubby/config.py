@@ -15,6 +15,9 @@ def create_if_not_exists():
         with open(".chubby", 'a'):
             pass
 
+def get_config_path():
+    return os.path.join(os.path.expanduser("~"), ".chubby")
+
 def read_config(config=config):
     """
     :returns:
@@ -25,3 +28,26 @@ def read_config(config=config):
     with open(os.path.join(os.path.expanduser("~"), ".chubby")) as f:
         config.read(f)
     return config
+
+def write_config(section_name: str,
+                 section_content: dict):
+    """
+    :param section_name:
+        The name of the section to be written to the config file
+    :param section_content:
+        The keys and values to be written in the section passed as a dict.
+    """
+    config = read_config()
+
+    # if present, modify
+    if section_name in config:
+        for keys in section_content:
+            # if already present, overwrite
+            if keys in config[section_name]:
+                config[section_name][keys] = section_content[keys]
+    # else create a new section
+    else:
+        config[section_name] = section_content
+
+    with open(get_config_path(), 'w') as f:
+        config.write(f)
