@@ -9,8 +9,8 @@ def create_if_not_exists():
     """
 
     # check if it exists
-    if not os.path.exists(os.path.join(os.path.expand("~"), '.chubby')):
-        os.chdir(os.path.expand("~"))
+    if not os.path.exists(os.path.join(os.path.expanduser("~"), '.chubby')):
+        os.chdir(os.path.expanduser("~"))
         # create file
         with open(".chubby", 'a'):
             pass
@@ -22,6 +22,6 @@ def read_config(config=config):
     """
     create_if_not_exists()
 
-    with open(os.path.join(os.path.expand("~"), ".chubby")) as f:
+    with open(os.path.join(os.path.expanduser("~"), ".chubby")) as f:
         config.read(f)
     return config
