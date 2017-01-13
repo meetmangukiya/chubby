@@ -27,8 +27,9 @@
 
 import github3
 import getpass
+import datetime
 
-import .config
+import chubby.config as config
 
 def create_token(username: str):
     """
@@ -39,9 +40,7 @@ def create_token(username: str):
     :returns:
         github3 Authorization object.
     """
-
     password = getpass.getpass()
-
     def two_factor_auth():
         token = ''
         while not token:
@@ -50,9 +49,9 @@ def create_token(username: str):
 
     return github3.authorize(login=username,
                              password=password,
-                             scopes = ['user', 'repo']
-                             note="chubby",
-                             note_url="https://github.com/meetmangukiya/chubby"
+                             scopes = ['user', 'repo'],
+                             note="chubby: {:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now()),
+                             note_url="https://github.com/meetmangukiya/chubby",
                              two_factor_callback=two_factor_auth)
 
 def save_to_config(username: str):

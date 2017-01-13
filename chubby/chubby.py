@@ -1,7 +1,11 @@
-from .argparser import parser
-import .chulib
+from chubby.argparser import parser
+import chubby.chulib as chulib
 
 args = parser.parse_args()
 
-if args.config:
-    chulib.save_to_config(args.config)
+def main():
+    try:
+        if args.config:
+            chulib.save_to_config(args.config)
+    except:
+        pass

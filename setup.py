@@ -26,6 +26,7 @@ if __name__ == "__main__":
         entry_points={
             'console_scripts': [
                 #TODO: 'chubby=chubby.chubby:main'
+                'chubby=chubby.chubby:main'
             ]
         }
     )
