@@ -46,3 +46,20 @@ issue_parser.add_argument('-r', '--repo', '--repository',
 issue_parser.add_argument('-u', '--user',
                           dest='user',
                           help='Username of the account to carry out actions on')
+
+## Repository Sub-subparser
+## ------------------------
+
+repo_parser = create_subparser.add_parser('repo',
+                                           help='Create new repositories')
+
+repo_parser.add_argument('-N', '--name',
+                         dest='repo_name',
+                         help='Name of the repository')
+
+repo_parser.add_argument('-u', '--user',
+                         help='Username of the account where the repository has to be created')
+
+repo_parser.add_argument('-d', '--description',
+                         dest='repo_description',
+                         help='Description of the repository')

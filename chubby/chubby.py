@@ -13,11 +13,11 @@ def main():
 
     # Create command
     elif args.command == 'create':
-        # Create issue command
         if not args.create:
             print("chubby: error: provide subcommand for create eg. `chubby create issue`")
             sys.exit()
 
+        # Create issue command
         if args.create == 'issue':
             # check required args
             if not args.issue_title or not args.issue_repo or not args.user:
@@ -33,6 +33,20 @@ def main():
             # create issue
             issue = gh.create_issue(owner=owner, repository=repo, title=title, body=description)
             print("Issue created successfully:", '#' + str(issue.number), issue.html_url)
+
+        # Create repo command
+        if args.create == 'repo':
+            # check required args
+            if not args.user or not args.repo_name:
+                print("chubby: Insufficient args provided. Ensure that you've provided `--user`, `--name` arguments")
+                sys.exit()
+
+            gh = chulib.get_login(args.user)
+
+            description = args.repo_description
+
+            repo = gh.create_repo(args.repo_name, description=description)
+            print("Repository created successfully:", repo.html_url)
 
 if __name__ == '__main__':
     main()
