@@ -71,3 +71,13 @@ def save_to_config(username: str):
     config.write_config(username, contents)
     gh = github3.login(token=auth.token)
     return gh
+
+def get_login(username: str):
+    """
+    Checks for token in the config file, if not create one.
+    :returns:
+        github3 login object
+    """
+    if not username:
+        return save_to_config(username)
+    return github3.login(token=config.read_config()[username]['token'])
