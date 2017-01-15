@@ -3,6 +3,13 @@ import argparse
 parser = argparse.ArgumentParser(description="GitHub in your terminal",
                                  prog="chubby")
 
+# Important:
+# Won't work if used like `chubby create -L ...`
+# Should be used as `chubby -L debug ...`
+parser.add_argument('--log', '-L',
+                    help='Set log level')
+
+
 subparsers = parser.add_subparsers(dest='command')
 
 # Config subparser

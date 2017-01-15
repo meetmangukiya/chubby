@@ -28,8 +28,11 @@
 import github3
 import getpass
 import datetime
+import logging
 
 import chubby.config as config
+
+logger = logging.getLogger(__name__)
 
 def create_token(username: str):
     """
@@ -42,9 +45,11 @@ def create_token(username: str):
     """
     password = getpass.getpass()
     def two_factor_auth():
+        logger.info('Needs 2FA')
         token = ''
+        logger.debug('Taking 2FA code from user...')
         while not token:
-            token = input("Enter 2FA code")
+            token = input("Enter 2FA code: ")
         return token
 
     return github3.authorize(login=username,
@@ -63,10 +68,14 @@ def save_to_config(username: str):
         github3 login object.
     """
     if username in config.read_config().sections():
+        logger.info('User already configured...')
         prompt = input("User already configured, do you want to force configure?[y/N]")
         prompt = 'N' if prompt != 'y' else 'y'
         if prompt == 'N':
+            logger.info('Returning existing config...')
             return github3.login(token=config.read_config()[username]['token'])
+        else:
+            logger.info('Force overwriting existing config with new config...')
     auth = create_token(username)
     contents = {
         "token": auth.token,
@@ -84,5 +93,6 @@ def get_login(username: str):
         github3 login object
     """
     if not username:
+        logger.warning("Config for {} doesn't exist, creating new section...")
         return save_to_config(username)
     return github3.login(token=config.read_config()[username]['token'])

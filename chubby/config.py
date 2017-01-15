@@ -1,5 +1,8 @@
 import configparser
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 def create_if_not_exists():
     """
@@ -8,6 +11,8 @@ def create_if_not_exists():
 
     # check if it exists
     if not os.path.exists(get_config_path()):
+        logger.debug('.chubby file does not exist')
+        logger.debug('Creating .chubby file at ' + os.path.expanduser('~') + '...')
         os.chdir(os.path.expanduser("~"))
         # create file
         with open(".chubby", 'a'):
@@ -23,6 +28,8 @@ def read_config(config=configparser.ConfigParser(), path=get_config_path()):
     :returns:
         returns the config object.
     """
+    logger.debug('Reading config: ' + path)
+
     create_if_not_exists()
 
     config.read(path)
@@ -37,15 +44,21 @@ def write_config(section_name: str,
     :param section_content:
         The keys and values to be written in the section passed as a dict.
     """
+    logger.debug('Writing config at ' + path + '...')
+
     config = read_config(path=path)
     # if present, modify
     if section_name in config:
+        logger.debug('Overwriting/Appending to existing section ' + section_name + '...')
         for keys in section_content:
             # if already present, overwrite. If not create
             config[section_name][keys] = str(section_content[keys])
     # else create a new section
     else:
+        logger.debug('Creating new section ' + section_name + '...')
         config[section_name] = section_content
 
     with open(path, 'w') as f:
         config.write(f)
+
+    logger.info('Written to config successfully.')
