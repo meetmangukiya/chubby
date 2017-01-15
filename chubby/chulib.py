@@ -64,19 +64,18 @@ def save_to_config(username: str):
     """
     if username in config.read_config().sections():
         prompt = input("User already configured, do you want to force configure?[y/N]")
-        prompt = 'N'
-        if prompt == 'y':
-            auth = create_token(username)
-            contents = {
-                "token": auth.token,
-                "id": auth.id,
-                "username": username
-            }
-            config.write_config(username, contents)
-            gh = github3.login(token=auth.token)
-            return gh
-        else:
-            return github3.login(config.read_config()[username]['token'])
+        prompt = 'N' if prompt != 'y' else 'y'
+        if prompt == 'N':
+            return github3.login(token=config.read_config()[username]['token'])
+    auth = create_token(username)
+    contents = {
+        "token": auth.token,
+        "id": auth.id,
+        "username": username
+    }
+    config.write_config(username, contents)
+    gh = github3.login(token=auth.token)
+    return gh
 
 def get_login(username: str):
     """
