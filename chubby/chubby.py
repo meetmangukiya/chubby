@@ -17,6 +17,11 @@ def main():
         logger.setLevel(getattr(logging, args.log.upper()))
     logger.debug('args parsed: {}'.format(args))
 
+    if not args.command or args.command == 'help':
+        logger.debug("No commands given, printing help and exiting...")
+        parser.print_help()
+        sys.exit()
+
     # Config command
     if args.command == 'config':
         logger.debug('Command config invoked...')

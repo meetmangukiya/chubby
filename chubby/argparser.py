@@ -9,8 +9,12 @@ parser = argparse.ArgumentParser(description="GitHub in your terminal",
 parser.add_argument('--log', '-L',
                     help='Set log level')
 
-
 subparsers = parser.add_subparsers(dest='command')
+
+# Help subparser
+# --------------
+subparsers.add_parser('help',
+                      help="show this help message and exit")
 
 # Config subparser
 # ----------------
