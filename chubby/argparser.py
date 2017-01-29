@@ -25,6 +25,12 @@ parser_config = subparsers.add_parser('config',
 parser_config.add_argument('user',
                            help="Obtain access token and save to config file")
 
+parser_config.add_argument('-D', '--default',
+                           help="Set the given user as default for future actions",
+                           dest="default_user",
+                           action="store_const",
+                           const=True)
+
 # Create subparser
 # ----------------
 
@@ -69,6 +75,7 @@ repo_parser.add_argument('-N', '--name',
                          help='Name of the repository')
 
 repo_parser.add_argument('-u', '--user',
+                         dest='user',
                          help='Username of the account where the repository has to be created')
 
 repo_parser.add_argument('-d', '--description',

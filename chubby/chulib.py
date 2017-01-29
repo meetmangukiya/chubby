@@ -92,7 +92,20 @@ def get_login(username: str):
     :returns:
         github3 login object
     """
-    if not username in config.read_config().sections():
-        logger.warning("Config for {} doesn't exist, creating new section...")
+    if not username in config.read_config().sections() and username != None:
+        logger.warning("Config for {} doesn't exist, creating new section...".format(username))
         return save_to_config(username)
+    if not username:
+        username = config.read_config()["DEF"]["user"]
     return github3.login(token=config.read_config()[username]['token'])
+
+def set_default(username: str):
+    """
+    Sets the given user as the default user in config.
+    """
+    logger.debug("The user to be set default not configured, configuring now...")
+    if username not in config.read_config().sections():
+        save_to_config(username)
+    logger.debug("Writing to DEFAULT section...")
+    config.write_config("DEF", {"user": username})
+    return True

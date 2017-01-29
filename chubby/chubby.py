@@ -3,6 +3,7 @@ import logging
 
 from chubby.argparser import parser
 import chubby.chulib as chulib
+import chubby.config as config
 
 args = parser.parse_args()
 
@@ -12,9 +13,12 @@ ch.setFormatter(logging.Formatter('[%(levelname)s]\t[%(name)s]\t%(message)s'.for
 logger.addHandler(ch)
 #logger.setFormatter(logging.Formatter('%(levelname)s:%(module)s:%(message)s'))
 
+is_default = "DEF" in config.read_config().sections()
+
 def main():
     if args.log:
         logger.setLevel(getattr(logging, args.log.upper()))
+    logger.debug("is_default: " + "True" if is_default else "False")
     logger.debug('args parsed: {}'.format(args))
 
     if not args.command or args.command == 'help':
@@ -25,7 +29,14 @@ def main():
     # Config command
     if args.command == 'config':
         logger.debug('Command config invoked...')
-        gh = chulib.save_to_config(args.user)
+        if args.default_user:
+            logger.debug('Setting ' + args.user + ' as default user')
+            state = chulib.set_default(args.user)
+            if state:
+                logger.debug("Setting default succeeded")
+                print("Username " + args.user + " set as default user")
+        else:
+            gh = chulib.save_to_config(args.user)
 
     # Create command
     elif args.command == 'create':
@@ -39,8 +50,8 @@ def main():
         if args.create == 'issue':
             # check required args
             logger.debug('subcommand `create issue` triggered...')
-            if not args.issue_title or not args.issue_repo or not args.user:
-                print("chubby: Insufficient args provided. Ensure that you've provided `--title`, `--repo`, and `--user`")
+            if not args.issue_title or not args.issue_repo or not args.user and not is_default:
+                print("chubby: Insufficient args provided. Ensure that you've provided `--title`, `--repo`" + ", and `--user`" if not is_default else "")
                 logger.debug('exiting: Insufficient args provided for `issue`...')
                 sys.exit()
 
@@ -58,8 +69,8 @@ def main():
         if args.create == 'repo':
             # check required args
             logger.debug('subcommand `create repo` triggered...')
-            if not args.user or not args.repo_name:
-                print("chubby: Insufficient args provided. Ensure that you've provided `--user`, `--name` arguments")
+            if not args.user or not args.repo_name and not is_default:
+                print("chubby: Insufficient args provided. Ensure that you've provided arguments: `--name`" + " `--user`" if not is_default else "")
                 logger.debug("exiting: Insufficient args provided for `repo`...")
                 sys.exit()
 
