@@ -1,3 +1,8 @@
+"""
+utilities to help with creating chubby config file(.chubby) and writing and
+reading it.
+"""
+
 import configparser
 import os
 import logging

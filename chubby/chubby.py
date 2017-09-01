@@ -1,9 +1,11 @@
 import sys
 import logging
 
+from IGitt.GitHub import GitHubToken
+from IGitt.GitHub.GitHubIssue import GitHubIssue
+
 from chubby.argparser import parser
-import chubby.chulib as chulib
-import chubby.config as config
+from chubby.config import read_config, write_config
 
 args = parser.parse_args()
 
@@ -11,75 +13,69 @@ logger = logging.getLogger(__name__)
 ch = logging.StreamHandler()
 ch.setFormatter(logging.Formatter('[%(levelname)s]\t[%(name)s]\t%(message)s'.format('')))
 logger.addHandler(ch)
-#logger.setFormatter(logging.Formatter('%(levelname)s:%(module)s:%(message)s'))
 
-is_default = "DEF" in config.read_config().sections()
+def requires(arguments, required):
+    for arg in required:
+        if not getattr(arguments, arg):
+            print(arg + " is a required argument")
+            return False
+    return True
+
+def take_action(args):
+    if args.command == 'config':
+        # configure, save token to .chubby file
+        token = args.token or input('Enter github token: ')
+        config = read_config()
+        write_config('DEFAULT', {'token': token})
+        print("chubby configured successfully!")
+        return
+    else:
+        title = args.issue_title
+        body = args.issue_description
+        issue_number = args.issue_number
+        repo = args.repository
+        token = GitHubToken(read_config()["DEFAULT"]["token"])
+
+        if args.command == 'issue':
+            if args.get:
+                # get issue by number
+                if requires(args, ["repository", "issue_number"]):
+                    issue = GitHubIssue(token, repo, issue_number)
+                    print(
+                        "Title: {}\n"
+                        "Description: {}\n"
+                        "Labels: {}\n"
+                        "Assignees: {}\n"
+                        "URL: {}".format(issue.title, issue.description,
+                                         ', '.join(issue.labels),
+                                         ', '.join(issue.assignees),
+                                         issue.url))
+                return
+            if not args.edit:
+                # create a new issue
+                if requires(args, ["issue_title", "repository"]):
+                    try:
+                        issue = GitHubIssue.create(token, repo, title, body)
+                    except RuntimeError:
+                        logger.exception("An exception occured while creating an "
+                                         "issue")
+                        print("Something went wrong while creating issue. Please "
+                              "ensure that you have rights to the repo provided.")
+                    else:
+                        print("Issue created successfully: {}".format(issue.url))
+                return
+            else:
+                # edit an existing issue
+                if requires(args, ["repository", "issue_number"]):
+                    issue = GitHubIssue(token, repo, iss_number)
+                    if title:
+                        issue.title = title
+                    if body:
+                        print("Editing just the title, cannot edit the body :(")
+                    print("Issue edited successfully: {}".format(issue.url))
 
 def main():
-    if args.log:
-        logger.setLevel(getattr(logging, args.log.upper()))
-    logger.debug("is_default: " + "True" if is_default else "False")
-    logger.debug('args parsed: {}'.format(args))
-
-    if not args.command or args.command == 'help':
-        logger.debug("No commands given, printing help and exiting...")
-        parser.print_help()
-        sys.exit()
-
-    # Config command
-    if args.command == 'config':
-        logger.debug('Command config invoked...')
-        if args.default_user:
-            logger.debug('Setting ' + args.user + ' as default user')
-            state = chulib.set_default(args.user)
-            if state:
-                logger.debug("Setting default succeeded")
-                print("Username " + args.user + " set as default user")
-        else:
-            gh = chulib.save_to_config(args.user)
-
-    # Create command
-    elif args.command == 'create':
-        logger.debug('`create` subparser triggered...')
-        if not args.create:
-            print("chubby: error: provide subcommand for create eg. `chubby create issue`")
-            logger.debug('exiting: No subcommand for create provided...')
-            sys.exit()
-
-        # Create issue command
-        if args.create == 'issue':
-            # check required args
-            logger.debug('subcommand `create issue` triggered...')
-            if not args.issue_title or not args.issue_repo or not args.user and not is_default:
-                print("chubby: Insufficient args provided. Ensure that you've provided `--title`, `--repo`" + ", and `--user`" if not is_default else "")
-                logger.debug('exiting: Insufficient args provided for `issue`...')
-                sys.exit()
-
-            gh = chulib.get_login(args.user)
-
-            title = args.issue_title
-            description = args.issue_description
-            owner = args.issue_repo.split('/')[0]
-            repo = args.issue_repo.split('/')[1]
-            # create issue
-            issue = gh.create_issue(owner=owner, repository=repo, title=title, body=description)
-            print("Issue created successfully:", '#' + str(issue.number), issue.html_url)
-
-        # Create repo command
-        if args.create == 'repo':
-            # check required args
-            logger.debug('subcommand `create repo` triggered...')
-            if not args.user or not args.repo_name and not is_default:
-                print("chubby: Insufficient args provided. Ensure that you've provided arguments: `--name`" + " `--user`" if not is_default else "")
-                logger.debug("exiting: Insufficient args provided for `repo`...")
-                sys.exit()
-
-            gh = chulib.get_login(args.user)
-
-            description = args.repo_description
-
-            repo = gh.create_repo(args.repo_name, description=description)
-            print("Repository created successfully:", repo.html_url)
+    take_action(args)
 
 if __name__ == '__main__':
     main()

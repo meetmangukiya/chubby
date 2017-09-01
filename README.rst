@@ -4,23 +4,35 @@ chubby
 Installation
 ------------
 
+.. code:: bash
+
+   pip install chubby
+
 Features
 --------
 
 Issues
 ~~~~~~
 
-#. Create new issues
+.. code:: python
 
-   .. code:: bash
+    # creating new issues
+    chubby issue -t "This is the issue title" -d "This is the issue description" -r "meetmangukiya/chubby"
+    # Edit issues
+    chubby issue -t "This is the new issue title" -r "meetmangukiya/chubby" -n 23
+    # get issue data
+    chubby issue -n 23 -r "meetmangukiya/chubby"
 
-       chubby create issue -t "This is the title" -d "The description" -r "repo/uri" -u "your username"
+For complete help, please use ``chubby issue -h``
 
-Repositories
-~~~~~~~~~~~~
+Config
+~~~~~~
 
-#. Create new repository
+Once you have installed chubby its time to configure it. Chubby uses GitHub
+personal access tokens to carry out all this actions on behalf of the user.
+Hence, you need to add it,
 
-   .. code:: bash
+.. code:: bash
 
-       chubby create repo -N "name" -d "The repo description" -u "<username of the account to create the repo under>"
+    chubby config -t "<this is your github acess token>"
+    chubby config -h # to get help
