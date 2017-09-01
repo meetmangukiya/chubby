@@ -1,3 +1,7 @@
+"""
+ArgumentParser of chubby.
+"""
+
 import argparse
 
 parser = argparse.ArgumentParser(description="GitHub in your terminal",
@@ -11,73 +15,42 @@ parser.add_argument('--log', '-L',
 
 subparsers = parser.add_subparsers(dest='command')
 
-# Help subparser
-# --------------
-subparsers.add_parser('help',
-                      help="show this help message and exit")
-
 # Config subparser
 # ----------------
+config_parser = subparsers.add_parser('config',
+                                      help='configure chubby')
 
-parser_config = subparsers.add_parser('config',
-                                      help='Obtain access token and save to config file')
-
-parser_config.add_argument('user',
-                           help="Obtain access token and save to config file")
-
-parser_config.add_argument('-D', '--default',
-                           help="Set the given user as default for future actions",
-                           dest="default_user",
-                           action="store_const",
-                           const=True)
-
-# Create subparser
-# ----------------
-
-parser_create = subparsers.add_parser('create',
-                                      help='Create repositories, issues, pull requests, etc.')
+config_parser.add_argument('-t', '--token',
+                    help='github account token')
 
 
-create_subparser = parser_create.add_subparsers(dest='create')
+# Issue subparser
+# ---------------
 
-## Issue Sub-subparser
-## -------------------
+issue_subparser = subparsers.add_parser('issue',
+                                        help='GitHub issue utilities')
 
-issue_parser = create_subparser.add_parser('issue',
-                                            help='Fiddle with GitHub issues')
+issue_subparser.add_argument('-t', '--title',
+                             dest='issue_title',
+                             help='Title of the issue')
 
-issue_parser.set_defaults(create='issue')
+issue_subparser.add_argument('-d', '--description',
+                             dest='issue_description',
+                             help='Description of the issue',
+                             default='')
 
-issue_parser.add_argument('-t', '--title',
-                          help='Title of the issue',
-                          dest='issue_title')
+issue_subparser.add_argument('-e', '--edit',
+                             help='Edit issue',
+                             action='store_true',
+                             default=False)
 
-issue_parser.add_argument('-d', '--description',
-                          dest='issue_description',
-                          help='Description of the issue')
+issue_subparser.add_argument('-r', '--repository',
+                             help='Repository for the issue')
 
-issue_parser.add_argument('-r', '--repo', '--repository',
-                          dest='issue_repo',
-                          help='Repository to create issue on')
+issue_subparser.add_argument('-n', '--number',
+                             dest='issue_number',
+                             help='Issue number')
 
-issue_parser.add_argument('-u', '--user',
-                          dest='user',
-                          help='Username of the account to carry out actions on')
-
-## Repository Sub-subparser
-## ------------------------
-
-repo_parser = create_subparser.add_parser('repo',
-                                           help='Create new repositories')
-
-repo_parser.add_argument('-N', '--name',
-                         dest='repo_name',
-                         help='Name of the repository')
-
-repo_parser.add_argument('-u', '--user',
-                         dest='user',
-                         help='Username of the account where the repository has to be created')
-
-repo_parser.add_argument('-d', '--description',
-                         dest='repo_description',
-                         help='Description of the repository')
+issue_subparser.add_argument('-g', '--get',
+                             action='store_true',
+                             help='Get a given issue')
