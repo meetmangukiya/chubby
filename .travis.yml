@@ -10,4 +10,4 @@ install:
 
 script:
   - python3 -m pytest --cov-report term-missing --cov chubby
-  - sh -c 'if [[ $TRAVIS_PULL_REQUEST -ne true]] && [[ $TRAVIS_BRANCH -ne "master"]]; then ./ci./deploy.pypi.sh; else exit 0;fi'
+  - sh -c 'if [[ $TRAVIS_PULL_REQUEST -ne true]] && [[ $TRAVIS_BRANCH -eq "master"]]; then ./ci./deploy.pypi.sh; else exit 0;fi'
