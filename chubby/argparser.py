@@ -13,6 +13,11 @@ parser = argparse.ArgumentParser(description="GitHub in your terminal",
 parser.add_argument('--log', '-L',
                     help='Set log level')
 
+parser.add_argument('--version', '-v',
+                    help='Show chubby version',
+                    action='store_true')
+
+
 subparsers = parser.add_subparsers(dest='command')
 
 # Config subparser

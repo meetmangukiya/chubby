@@ -5,6 +5,7 @@ from IGitt.GitHub import GitHubToken
 from IGitt.GitHub.GitHubIssue import GitHubIssue
 import requests
 
+from chubby import VERSION
 from chubby.argparser import parser
 from chubby.config import read_config, write_config
 
@@ -84,7 +85,11 @@ def take_action(args):
                     print("Issue edited successfully: {}".format(issue.url))
 
 def main():
-    take_action(args)
+    if args.command:
+        take_action(args)
+    else:
+        if args.version:
+            print("chubby {}".format(VERSION))
 
 if __name__ == '__main__':
     main()
