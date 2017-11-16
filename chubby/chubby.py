@@ -3,6 +3,7 @@ import logging
 
 from IGitt.GitHub import GitHubToken
 from IGitt.GitHub.GitHubIssue import GitHubIssue
+import requests
 
 from chubby.argparser import parser
 from chubby.config import read_config, write_config
@@ -25,8 +26,12 @@ def take_action(args):
     if args.command == 'config':
         # configure, save token to .chubby file
         token = args.token or input('Enter github token: ')
+        username = requests.get('https://api.github.com/user',
+                                headers={
+                                    'Authorization': 'token ' + token
+                                }).json()['login']
         config = read_config()
-        write_config('DEFAULT', {'token': token})
+        write_config('DEFAULT', {'token': token, 'username': username})
         print("chubby configured successfully!")
         return
     else:
@@ -34,7 +39,9 @@ def take_action(args):
         body = args.issue_description
         issue_number = args.issue_number
         repo = args.repository
-        token = GitHubToken(read_config()["DEFAULT"]["token"])
+        config = read_config()
+        token = GitHubToken(config["DEFAULT"]["token"])
+        username = config["DEFAULT"]["username"]
 
         if args.command == 'issue':
             if args.get:
@@ -54,6 +61,8 @@ def take_action(args):
             if not args.edit:
                 # create a new issue
                 if requires(args, ["issue_title", "repository"]):
+                    if '/' not in repo:
+                        repo = '/'.join([username, repo])
                     try:
                         issue = GitHubIssue.create(token, repo, title, body)
                     except RuntimeError:
