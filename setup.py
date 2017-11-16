@@ -1,13 +1,14 @@
 from setuptools import setup
 
+from chubby.version import VERSION
+
+
 with open('requirements.txt') as req:
     dependencies = req.read().splitlines()
 
 with open('README.rst') as readme:
     long_description = readme.read()
 
-with open("version.txt") as v:
-    VERSION = v.read().rstrip()
 
 if __name__ == "__main__":
     setup(
